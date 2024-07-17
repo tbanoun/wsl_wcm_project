@@ -64,3 +64,11 @@ class ProjectProject(models.Model):
         action = self.env['ir.actions.act_window']._for_xml_id('project.project_collaborator_action')
         action["domain"] = [('project_id', '=', self.id), ('employee_id', '=', False)]
         return action
+
+
+    def openTimeshhetProject(self):
+        """open timeshhet project"""
+        action = self.env['ir.actions.act_window']._for_xml_id('hr_timesheet.act_hr_timesheet_line')
+        action["domain"] = [('project_id', '=', self.id)]
+        action["context"] = {'default_project_id': self.id}
+        return action

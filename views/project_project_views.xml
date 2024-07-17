@@ -26,7 +26,10 @@
             <xpath expr="//div[@class='oe_button_box']" position="inside">
                 <button class="oe_stat_button"
                         icon="fa-calendar"
-                        string="Feuille de temps"/>
+                        string="Feuille de temps"
+                        type="object"
+                        name="openTimeshhetProject"
+                />
                 <button class="oe_stat_button"
                         icon="fa-file-text"
                         string="Facture d'achat"/>
