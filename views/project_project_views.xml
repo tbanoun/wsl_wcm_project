@@ -41,6 +41,8 @@
                         string="Devis"/>
                 <button class="oe_stat_button"
                         icon="fa-files-o"
+                        name="openContratPurshase"
+                        type="object"
                         string="Contrats d'achat"/>
                 <button class="oe_stat_button"
                         icon="fa-files-o"

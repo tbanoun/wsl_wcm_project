@@ -6,7 +6,37 @@
         <field name="model">hr.contract</field>
         <field name="arch" type="xml">
             <form create="True" edit="True">
-                <h1>Hello world</h1>
+                <sheet>
+                    <h2>
+                        <field name="name"/>
+                    </h2>
+                    <group>
+                        <group>
+                            <field name="contract_type_id" string="Type de contrat" readonly="True"/>
+                            <field name="project_id" string="Projet" readonly="True"/>
+                            <field name="company_id" string="Agence"/>
+                        </group>
+                        <group>
+                            <field name="date_start" string="Date de début"/>
+                            <field name="date_end" string="Date de fin"/>
+                            <field name="client_id" string="Client"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="intervenants" string="Intervenants">
+                            <field name="collaborator_ids">
+                                <tree editable="bottom">
+                                    <field name="employee_id" string="Employé" widget="many2one" required="1"/>
+                                    <field name="contrat_id" string="Contrat de l'employé" readonly="1"/>
+                                    <field name="start_date" string="Date début"/>
+                                    <field name="end_date" string="Date fin"/>
+                                    <field name="tx_sale" string="Tx vente"/>
+                                    <field name="tx_buy" string="Tx achat"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
             </form>
         </field>
     </record>
@@ -21,7 +51,7 @@
                 <field name="client_id"/>
                 <field name="project_id"/>
                 <field name="contract_type_id"/>
-                <field name="collaborator_ids" widget="one2many"/>
+                <field name="collaborator_ids"/>
             </tree>
         </field>
     </record>
@@ -30,7 +60,7 @@
     <record id="hr_contract_project_action" model="ir.actions.act_window">
         <field name="name">Contrat</field>
         <field name="res_model">hr.contract</field>
-        <field name="view_mode">tree</field>
+        <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create a new contrat for projet

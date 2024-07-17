@@ -2,6 +2,7 @@ from odoo import fields, models, api
 
 class projectCollaborateurs(models.Model):
     _inherit = 'project.collaborator'
+    _rec_name = 'employee_id'
 
     employee_id = fields.Many2one('hr.employee')
     contrat_id = fields.Many2one('hr.contract', compute="computeContart_id")
@@ -15,15 +16,15 @@ class projectCollaborateurs(models.Model):
     @api.depends("employee_id")
     def computeContart_id(self):
         """hr.contract"""
-        contrat_ids = self.env['hr.contract'].search([('employee_id', '=', self.employee_id.id)])
-        if not contrat_ids: self.contrat_id = None
-        contrat_id = None
-        for contrat in contrat_ids:
-            if contrat.state != 'open': continue
-            contrat_id = contrat.id
-        if not contrat_id: self.contrat_id = None
-        self.contrat_id = contrat_id
-        # return contrat_id
+        for rec in self:
+            contrat_ids = self.env['hr.contract'].search([('employee_id', '=', rec.employee_id.id)])
+            if not contrat_ids: rec.contrat_id = None
+            contrat_id = None
+            for contrat in contrat_ids:
+                if contrat.state != 'open': continue
+                contrat_id = contrat.id
+            if not contrat_id: rec.contrat_id = None
+            rec.contrat_id = contrat_id
 
     def write(self, vals):
         res = super(projectCollaborateurs, self).write(vals)
@@ -74,14 +75,49 @@ class ProjectProject(models.Model):
         action["context"] = {'default_project_id': self.id}
         return action
 
+    def get_contractType(self, type):
+        """get id conract type if he exist else create it and return id """
+        if type == 'sales':
+            type_id = self.env['hr.contract.type'].sudo().search([('code', '=', 'c_sales')])
+            if type_id: return type_id[0].id
+            type_id = self.env['hr.contract.type'].sudo().create({
+                'name': 'Contrat de vente',
+                'code': 'c_sales'
+            })
+            return type_id.id
+        elif type =='purchase':
+            type_id = self.env['hr.contract.type'].sudo().search([('code', '=', 'c_purchase')])
+            if type_id: return type_id[0].id
+            type_id = self.env['hr.contract.type'].sudo().create({
+                'name': 'Contrat d\'achat',
+                'code': 'c_purchase'
+            })
+            return type_id.id
+        return None
+
     def openContratSale(self):
         """open contrat"""
+        conrat_type = self.get_contractType('sales')
         action = self.env['ir.actions.act_window']._for_xml_id('wsl_wcm_project.hr_contract_project_action')
-        action["domain"] = [('project_id', '=', self.id)]
+        action["domain"] = [('project_id', '=', self.id), ('contract_type_id', '=', conrat_type)]
         action["context"] = {
             'tree_view_ref': 'wsl_wcm_project.project_contract_tree',
             'form_view_ref': 'wsl_wcm_project.project_contract_form',
-            'default_project_id': self.id
+            'default_project_id': self.id,
+            'default_contract_type_id': conrat_type
+            }
+        return action
+
+    def openContratPurshase(self):
+        """open contrat"""
+        conrat_type = self.get_contractType('purchase')
+        action = self.env['ir.actions.act_window']._for_xml_id('wsl_wcm_project.hr_contract_project_action')
+        action["domain"] = [('project_id', '=', self.id), ('contract_type_id', '=', conrat_type)]
+        action["context"] = {
+            'tree_view_ref': 'wsl_wcm_project.project_contract_tree',
+            'form_view_ref': 'wsl_wcm_project.project_contract_form',
+            'default_project_id': self.id,
+            'default_contract_type_id': conrat_type
             }
         return action
 
