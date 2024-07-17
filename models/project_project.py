@@ -10,6 +10,7 @@ class projectCollaborateurs(models.Model):
     tx_sale = fields.Float()
     tx_buy = fields.Float()
     partner_id = fields.Many2one('res.partner', 'Collaborator', required=False, readonly=True)
+    contract_id = fields.Many2one('hr.contract')
 
     @api.depends("employee_id")
     def computeContart_id(self):
@@ -71,4 +72,47 @@ class ProjectProject(models.Model):
         action = self.env['ir.actions.act_window']._for_xml_id('hr_timesheet.act_hr_timesheet_line')
         action["domain"] = [('project_id', '=', self.id)]
         action["context"] = {'default_project_id': self.id}
+        return action
+
+    def openContratSale(self):
+        """open contrat"""
+        action = self.env['ir.actions.act_window']._for_xml_id('wsl_wcm_project.hr_contract_project_action')
+        action["domain"] = [('project_id', '=', self.id)]
+        action["context"] = {
+            'tree_view_ref': 'wsl_wcm_project.project_contract_tree',
+            'form_view_ref': 'wsl_wcm_project.project_contract_form',
+            'default_project_id': self.id
+            }
+        return action
+
+
+class Employee(models.Model):
+    _inherit = "hr.employee"
+
+    def action_open_contract(self):
+        self.ensure_one()
+        action = self.env["ir.actions.actions"]._for_xml_id('hr_contract.action_hr_contract')
+        action['views'] = [(False, 'form')]
+        action["context"] = {
+            'tree_view_ref': 'hr_contract.hr_contract_view_tree',
+            'form_view_ref': 'hr_contract.hr_contract_view_form'
+        }
+        if not self.contract_ids:
+            action['context'] = {
+                'default_employee_id': self.id,
+            }
+            action['target'] = 'new'
+            return action
+
+        target_contract = self.contract_id
+        if target_contract:
+            action['res_id'] = target_contract.id
+            return action
+
+        target_contract = self.contract_ids.filtered(lambda c: c.state == 'draft')
+        if target_contract:
+            action['res_id'] = target_contract[0].id
+            return action
+
+        action['res_id'] = self.contract_ids[0].id
         return action

@@ -13,6 +13,7 @@
     'data': [
     'security/ir.model.access.csv',
     'views/project_project_views.xml',
+    'views/project_contrat.xml',
 ],
     'images': ['static/description/icon.png'],
     'license': 'AGPL-3',

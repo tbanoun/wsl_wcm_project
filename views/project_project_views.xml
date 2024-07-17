@@ -44,7 +44,10 @@
                         string="Contrats d'achat"/>
                 <button class="oe_stat_button"
                         icon="fa-files-o"
-                        string="Contrats de vente"/>
+                        string="Contrats de vente"
+                        name="openContratSale"
+                        type="object"
+                />
             </xpath>
             <!--Buttons-->
             <xpath expr="//header" position="inside">
