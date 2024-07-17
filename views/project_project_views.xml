@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!-- Project task view form -->
+    <record id="view_project_form" model="ir.ui.view">
+        <field name="name">Project.Project.view.form.inherit</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="arch" type="xml">
+            <!--Ajouter les smart button-->
+            <!--Collaborators-->
+            <xpath expr="//form/sheet/div/button[@name='%(project.project_collaborator_action)d']"
+                   position="replace">
+                <button class="oe_stat_button" name="openColaboratorView" type="object" icon="fa-users"
+                        groups="project.group_project_manager" invisible="privacy_visibility != 'portal'">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="collaborator_count" nolabel="1"/>
+                        </span>
+                        <span class="o_stat_text">
+                            Collaborators
+                        </span>
+                    </div>
+                </button>
+            </xpath>
+            <!--Feuille de temps-->
+            <xpath expr="//div[@class='oe_button_box']" position="inside">
+                <button class="oe_stat_button"
+                        icon="fa-calendar"
+                        string="Feuille de temps"/>
+                <button class="oe_stat_button"
+                        icon="fa-file-text"
+                        string="Facture d'achat"/>
+                <button class="oe_stat_button"
+                        icon="fa-file-text"
+                        string="Facture de vente"/>
+                <button class="oe_stat_button"
+                        icon="fa-sticky-note-o"
+                        string="Devis"/>
+                <button class="oe_stat_button"
+                        icon="fa-files-o"
+                        string="Contrats d'achat"/>
+                <button class="oe_stat_button"
+                        icon="fa-files-o"
+                        string="Contrats de vente"/>
+            </xpath>
+            <!--Buttons-->
+            <xpath expr="//header" position="inside">
+                <button>Créer une facture</button>
+                <button>créer une facture de vente</button>
+                <button>créer une facture d'achat</button>
+                <button>créer un devis</button>
+            </xpath>
+            <!--Modifier le nom du champ chef de projet-->
+            <xpath expr="//field[@name='user_id']" position="attributes">
+                <attribute name="string">Responsable</attribute>
+            </xpath>
+            <!--afficher le champs company_id et changer le nom au agence-->
+            <xpath expr="//field[@name='tag_ids']" position="after">
+                <field name="company_id" string="Agence"/>
+            </xpath>
+            <!--masquer le champs nom de la teches-->
+            <xpath expr="//field[@name='label_tasks']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <!--ajouter les page-->
+            <xpath expr="//notebook/page[@name='description']" position="before">
+                <!--page1 information projet facture-->
+                <page name="projet_facture" string="information projet facture">
+                    <group>
+                        <group>
+                            <field name="cost_center"/>
+                            <field name="purchase_order"/>
+                            <field name="contract_number"/>
+                        </group>
+                        <group>
+                            <field name="sales_deadline"/>
+                            <field name="purchase_deadline"/>
+                        </group>
+                    </group>
+                </page>
+                <!--Intervenants-->
+                <page name="intervenants" string="Intervenants">
+                    <field name="collaborator_ids">
+                        <tree editable="bottom">
+                            <field name="employee_id" string="Employé"  widget="many2one" required="1"/>
+                            <field name="contrat_id" string="Contrat de l'employé" readonly="1"/>
+                            <field name="start_date" string="Date début"/>
+                            <field name="end_date" string="Date fin"/>
+                            <field name="tx_sale" string="Tx vente"/>
+                            <field name="tx_buy" string="Tx achat"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
